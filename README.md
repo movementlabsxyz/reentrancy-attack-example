@@ -1,11 +1,11 @@
 # reentrancy-attack-example
 An example of a reentrancy attack on EVM.
 
-Re-entrancy is foremost a language-level vulnerability. It occurs because ownership is not properly managed in the code. Move makes it less likely to suffer from re-entrancy attacks because you can only manipulate a resource in one ownership context at a time. However, it is still possible to write code that is vulnerable to re-entrancy attacks in Move if you really try. 
+Re-entrancy is foremost a language-level vulnerability. It occurs because ownership is not properly managed in the code--usually owing to poor expressiveness or semantics. Move makes it less likely to suffer from re-entrancy attacks because you can only manipulate a resource in one ownership context at a time. However, it is still possible to write code that is vulnerable to re-entrancy attacks even in Move if you really try. 
 
-By implementing EVM in Move, you don't necessarily inherit this ownership model. However, I believe it could potentially be possible to leverage this ownership model if various EVM states are narrowly wrapped as Move resources and interpreted opcodes are required to take ownership of these resources before they can be manipulated. This is likely more feasible at the bytecode level, hence a transpiler could be more effective against this objective. Bytecode would then need to be validated locally or during publication to ensure that it does not contain these re-entrancy vulnerabilities. 
+By implementing EVM in Move, you don't necessarily inherit this ownership model. However, I believe it could possible to leverage Move's ownership model if (a) various EVM states are narrowly wrapped as Move resources and (b) interpreted opcodes are required to take ownership of these resources before they can be manipulated. This is likely more feasible at the bytecode level, hence a transpiler could be more effective against this objective. Bytecode would then need to be validated locally or during publication to ensure that it does not contain these re-entrancy vulnerabilities--which I believe is possible (I do think linearity is baked into the bytecode as well). 
 
-Another far-flung alternative would be to translate at the language level. But, this is not commonly done because it is rarely practical outside of the narrowest of use cases. That being said, a very-well tuned LLM could potentially be leveraged. 
+Another far-flung alternative--but one which would certainly work--would be to translate at the language level. But, this is not commonly done because it is rarely practical outside of the narrowest of use cases. That being said, a very-well tuned LLM could potentially be leveraged. 
 
 ## How to run
 
