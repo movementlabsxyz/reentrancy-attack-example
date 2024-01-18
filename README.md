@@ -1,66 +1,36 @@
-## Foundry
+# reentrancy-attack-example
+An example of a reentrancy attack on EVM.
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Re-entrancy is foremost a language-level vulnerability. It occurs because ownership is not properly managed in the code. Move makes it less likely to suffer from re-entrancy attacks because you can only manipulate a resource in one ownership context at a time. However, it is still possible to write code that is vulnerable to re-entrancy attacks in Move if you really try. 
 
-Foundry consists of:
+By implementing EVM in Move, you don't necessarily inherit this ownership model. However, I believe it could potentially be possible to leverage this ownership model if various EVM states are narrowly wrapped as Move resources and interpreted opcodes are required to take ownership of these resources before they can be manipulated. This is likely more feasible at the bytecode level, hence a transpiler could be more effective against this objective. Bytecode would then need to be validated locally or during publication to ensure that it does not contain these re-entrancy vulnerabilities. 
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Another far-flung alternative would be to translate at the language level. But, this is not commonly done because it is rarely practical outside of the narrowest of use cases. That being said, a very-well tuned LLM could potentially be leveraged. 
 
-## Documentation
+## How to run
 
-https://book.getfoundry.sh/
+### Pre-requisites
+1. `forge` is installed on your device.
+2. You have a EVM private key and set the environment variable `PRIVATE_KEY` to it.
 
-## Usage
+### `PointsAttack`
+This is a simple re-entrancy attack example that does not rely on payable or token interfaces. This example shows how reentrancy it can be exploited where critical sections are poorly managed.
 
-### Build
+To check this out against your chosen network, run the following command:
 
-```shell
-$ forge build
+```bash
+forge script PointsAttack --broadcast --chain-id <your-chain-id> --rpc-url <your-network> --sender <your-address> --private-key $PRIVATE_KEY
 ```
 
-### Test
+### `BankAttack`
+A slightly more sophisticated example that exploits a re-entrancy vulnerability in a contract that implements a `payable` bank. This is a classic ETH reentrancy attack.
 
-```shell
-$ forge test
-```
+To check this out against your chosen network, run the following commands:
 
-### Format
+```bash
+forge script DeployBank --broadcast --chain-id <your-chain-id> --rpc-url <your-network> --sender <your-address> --private-key $PRIVATE_KEY
 
-```shell
-$ forge fmt
-```
+export BANK_ADDRESS=<address-of-deployed-bank>
 
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
+forge script ExecuteAttack --broadcast --chain-id <your-chain-id> --rpc-url <your-network> --sender <your-address> --private-key $PRIVATE_KEY --bank-address $BANK_ADDRESS
 ```
